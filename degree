@@ -1,0 +1,65 @@
+from collections import deque
+
+def shortest_path(source, target):
+    """
+    Returns the shortest path from source to target in the form of a list of (movie_id, person_id) pairs.
+    If no path exists, returns None.
+    """
+    # Keep track of explored actors to avoid revisiting them
+    explored = set()
+    
+    # Queue for BFS, initialized with the source actor and an empty path
+    queue = deque([(source, [])])
+    
+    # Continue searching while there are actors to explore
+    while queue:
+        # Get the next actor and the path to them
+        person, path = queue.popleft()
+        
+        # Mark the current actor as explored
+        explored.add(person)
+        
+        # Get neighbors (movie, actor) pairs of this actor
+        for movie_id, neighbor in neighbors_for_person(person):
+            # If the neighbor is unexplored, consider them
+            if neighbor not in explored:
+                new_path = path + [(movie_id, neighbor)]
+                
+                # If we reached the target actor, return the full path
+                if neighbor == target:
+                    return new_path
+                
+                # Add the neighbor to the queue for further exploration
+                queue.append((neighbor, new_path))
+    
+    # If no path was found, return None
+    return None
+
+# Function to simulate getting movie-actor pairs for a person
+def neighbors_for_person(person_id):
+    """
+    This is a placeholder function to simulate returning a set of (movie_id, person_id) pairs
+    for actors who starred in the same movies as the given person_id.
+    Replace this with actual data lookup.
+    """
+    # Example data: {actor_id: [(movie_id, coactor_id), ...]}
+    example_database = {
+        1: [(101, 2), (102, 3)],  # Actor 1 starred in movies 101 with Actor 2, 102 with Actor 3
+        2: [(101, 1), (103, 4)],  # Actor 2 starred in movies 101 with Actor 1, 103 with Actor 4
+        3: [(102, 1), (104, 5)],  # Actor 3 starred in movies 102 with Actor 1, 104 with Actor 5
+        4: [(103, 2)],            # Actor 4 starred in movie 103 with Actor 2
+        5: [(104, 3)]             # Actor 5 starred in movie 104 with Actor 3
+    }
+    
+    # Return the neighbors for the person_id, or an empty set if person_id is not in the example database
+    return set(example_database.get(person_id, []))
+
+# Example usage
+source_actor = 1
+target_actor = 4
+path = shortest_path(source_actor, target_actor)
+
+if path:
+    print("Shortest path found:", path)
+else:
+    print("No path found")
